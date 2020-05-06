@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <string name="_A">PL</string>
+    <string name="_B">LPPP</string>
+    <string name="_C">LPLP</string>
+    <string name="_D">LPP</string>
+    <string name="_E">P</string>
+    <string name="_F">PPLP</string>
+    <string name="_G">LLP</string>
+    <string name="_H">PPPP</string>
+    <string name="_I">PP</string>
+    <string name="_J">PLLL</string>
+    <string name="_K">LPL</string>
+    <string name="_L">PLPP</string>
+    <string name="_M">LL</string>
+    <string name="_N">LP</string>
+    <string name="_O">LLL</string>
+    <string name="_P">PLLP</string>
+    <string name="_Q">LLPL</string>
+    <string name="_R">PLP</string>
+    <string name="_S">PPP</string>
+    <string name="_T">L</string>
+    <string name="_U">PPL</string>
+    <string name="_V">PPPL</string>
+    <string name="_W">PLL</string>
+    <string name="_X">LPPL</string>
+    <string name="_Y">LPLL</string>
+    <string name="_Z">LLPP</string>
+
+    <string name="_0">LLLLL</string>
+    <string name="_1">PLLLL</string>
+    <string name="_2">PPLLL</string>
+    <string name="_3">PPPLL</string>
+    <string name="_4">PPPPL</string>
+    <string name="_5">PPPPP</string>
+    <string name="_6">LPPPP</string>
+    <string name="_7">LLPPP</string>
+    <string name="_8">LLLPP</string>
+    <string name="_9">LLLLP</string>
+
+
+</resources>

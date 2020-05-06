@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="__PL">A</string>
+    <string name="__LPPP">B</string>
+    <string name="__LPLP">C</string>
+    <string name="__LPP">D</string>
+    <string name="__P">E</string>
+    <string name="__PPLP">F</string>
+    <string name="__LLP">G</string>
+    <string name="__PPPP">H</string>
+    <string name="__PP">I</string>
+    <string name="__PLLL">J</string>
+    <string name="__LPL">K</string>
+    <string name="__PLPP">L</string>
+    <string name="__LL">M</string>
+    <string name="__LP">N</string>
+    <string name="__LLL">O</string>
+    <string name="__PLLP">P</string>
+    <string name="__LLPL">Q</string>
+    <string name="__PLP">R</string>
+    <string name="__PPP">S</string>
+    <string name="__L">T</string>
+    <string name="__PPL">U</string>
+    <string name="__PPPL">V</string>
+    <string name="__PLL">W</string>
+    <string name="__LPPL">X</string>
+    <string name="__LPLL">Y</string>
+    <string name="__LLPP">Z</string>
+
+    <string name="__LLLLL">0</string>
+    <string name="__PLLLL">1</string>
+    <string name="__PPLLL">2</string>
+    <string name="__PPPLL">3</string>
+    <string name="__PPPPL">4</string>
+    <string name="__PPPPP">5</string>
+    <string name="__LPPPP">6</string>
+    <string name="__LLPPP">7</string>
+    <string name="__LLLPP">8</string>
+    <string name="__LLLLP">9</string>
+
+</resources>
