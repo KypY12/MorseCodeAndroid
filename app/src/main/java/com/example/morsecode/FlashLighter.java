@@ -1,10 +1,18 @@
 package com.example.morsecode;
 
+import android.app.Activity;
+import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.os.Looper;
+import android.view.View;
 import android.widget.Button;
 
+import java.util.logging.Handler;
+
 public class FlashLighter implements Runnable {
+
+    private Activity context;
 
     private String morsePhrase;
     private CameraManager cameraManager;
@@ -13,10 +21,13 @@ public class FlashLighter implements Runnable {
     private int dotTime;
     private int dashTime;
 
-    private Button flashButton;
+    private Button startFlashButton;
+    private Button stopFlashButton;
 
 
-    public FlashLighter(String morsePhrase, CameraManager cameraManager, Button flashButton, int dotTime, int dashTime) {
+    public FlashLighter(Activity context, String morsePhrase, CameraManager cameraManager, Button startFlashButton, Button stopFlashButton, int dotTime, int dashTime) {
+        this.context = context;
+
         this.morsePhrase = morsePhrase;
         this.cameraManager = cameraManager;
         try {
@@ -25,7 +36,8 @@ public class FlashLighter implements Runnable {
             e.printStackTrace();
         }
 
-        this.flashButton = flashButton;
+        this.startFlashButton = startFlashButton;
+        this.stopFlashButton = stopFlashButton;
         this.dotTime = dotTime;
         this.dashTime = dashTime;
     }
@@ -50,7 +62,6 @@ public class FlashLighter implements Runnable {
     @Override
     public void run() {
 
-        //flashButton.setEnabled(false);
         String[] words = morsePhrase.split("    ");
 
         for (int wordIndex = 0; wordIndex < words.length; wordIndex++) {
@@ -60,6 +71,9 @@ public class FlashLighter implements Runnable {
                 String character = chars[charIndex];
 
                 for (int symbolIndex = 0; symbolIndex < character.length(); symbolIndex++) {
+                    if (startFlashButton.getVisibility() == View.VISIBLE) {
+                        return;
+                    }
                     flashOnOff(true);
                     // Tine aprins pentru punct sau pentru linie
                     if (character.charAt(symbolIndex) == '.') {
@@ -89,6 +103,29 @@ public class FlashLighter implements Runnable {
                 waitTime(2 * dashTime);
             }
         }
-        //flashButton.setEnabled(true);
+
+        context.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    startFlashButton.setVisibility(View.VISIBLE);
+                    stopFlashButton.setVisibility(View.GONE);
+                }
+            });
+//        Handler mainHandler = new Handler(context.getMainLooper());
+//
+//
+//        try {
+//            Activity.runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    startFlashButton.setVisibility(View.VISIBLE);
+//                    stopFlashButton.setVisibility(View.GONE);
+//                }
+//            });
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+
+
     }
 }
