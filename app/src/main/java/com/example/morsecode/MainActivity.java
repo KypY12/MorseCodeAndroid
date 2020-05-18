@@ -1,33 +1,39 @@
 package com.example.morsecode;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.hardware.camera2.CameraManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.morsecode.flash.FlashLighter;
+import com.example.morsecode.handlers.FiltersHandler;
+import com.example.morsecode.handlers.UiHandler;
+import com.example.morsecode.morse.MorseConverter;
+import com.example.morsecode.sms.SmsHandler;
 
 public class MainActivity extends AppCompatActivity {
 
     private final int CAMERA_PERMISSION_CODE = 0;
     private final int SEND_SMS_PERMISSION_CODE = 1;
     private final int RECEIVE_SMS_PERMISSION_CODE = 2;
+    private final int READ_CONTACTS_PERMISSION_CODE = 3;
+    private final int CONTACT_SELECTED_CODE = 4;
 
     private static Context initialContext;
 
@@ -36,146 +42,177 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private MorseConverter morseConverter;
-
-    private TextView livePreview;
-    private TextView chatView;
-    private EditText phraseInput;
-
-    private EditText phoneNumberSend;
-    private Button startFlashButton;
-    private Button stopFlashButton;
-    private Button sendSmsButton;
-
     private BroadcastReceiver smsReceiver;
 
-
-    private void enableFlashMode(){
-        findViewById(R.id.livePreviewTableRow).setVisibility(View.VISIBLE);
-        findViewById(R.id.start_flash_button).setVisibility(View.VISIBLE);
-
-
-        findViewById(R.id.sendToPhoneNumberTableRow).setVisibility(View.GONE);
-        findViewById(R.id.chatViewTableRow).setVisibility(View.GONE);
-        findViewById(R.id.send_sms_button).setVisibility(View.GONE);
-    }
-
-    private void enableSmsMode(){
-        findViewById(R.id.livePreviewTableRow).setVisibility(View.GONE);
-        findViewById(R.id.start_flash_button).setVisibility(View.GONE);
-
-
-        findViewById(R.id.sendToPhoneNumberTableRow).setVisibility(View.VISIBLE);
-        findViewById(R.id.chatViewTableRow).setVisibility(View.VISIBLE);
-        findViewById(R.id.send_sms_button).setVisibility(View.VISIBLE);
-    }
-
-    private void setModeButtonsListeners(){
-
-        enableFlashMode();
-
-        Button flashModeButton = (Button)findViewById(R.id.flashModeButton);
-        flashModeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                enableFlashMode();
-            }
-        });
-
-        Button smsModeButton = (Button)findViewById(R.id.smsModeButton);
-        smsModeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                enableSmsMode();
-            }
-        });
-
-    }
-
+    private UiHandler uiHandler;
+    private FiltersHandler filtersHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        morseConverter = new MorseConverter();
+        this.uiHandler = new UiHandler(this);
+        this.filtersHandler = new FiltersHandler(this);
 
-        livePreview = (TextView) findViewById(R.id.livePreview);
-        chatView = (TextView) findViewById(R.id.chatView);
-        phraseInput = (EditText) findViewById(R.id.phraseInput);
-
-        smsReceiver = new SmsHandler(chatView, morseConverter);
-
-        phoneNumberSend = (EditText) findViewById(R.id.sendToPhoneNumber);
-        startFlashButton = (Button) findViewById(R.id.start_flash_button);
-        stopFlashButton = (Button) findViewById(R.id.stop_flash_button);
-        sendSmsButton = (Button) findViewById(R.id.send_sms_button);
+        // Forteaza utilizatorul sa utilizeze UPPERCASE doarece peste tot se foloseste UPPERCASE (iar codul morse e case insensitive)
+        filtersHandler.addAllCapsFilter(uiHandler.getPhraseInput());
+        // De asemenea, alfabetul morse are doar caractere alfanumerice (si eventual spatiu)
+        filtersHandler.addSpaceLetterDigitsOnlyFilter(uiHandler.getPhraseInput());
 
 
-        stopFlashButton.setVisibility(View.GONE);
-        setModeButtonsListeners();
+        morseConverter = new MorseConverter(this);
+        smsReceiver = new SmsHandler(uiHandler.getChatView(), morseConverter);
+
+        // Gestionez permisiunile
+        handlePermissions();
 
 
-//        final boolean hasFlash = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+        // Ascunde butonul de stop flash
+        uiHandler.hideStopButton();
+        // Setez listeners pentru butoanele de selectie a modului aplicatiei
+        uiHandler.setModeButtonsListeners();
+        // Setez listeners pentru celelalte butoane
+        setSecondButtonsListeners();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
-        }
+        initialContext = getApplicationContext();
+    }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_PERMISSION_CODE);
-        }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECEIVE_SMS}, RECEIVE_SMS_PERMISSION_CODE);
-        } else {
-            IntentFilter intentFilter = new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
-            registerReceiver(smsReceiver, intentFilter);
-        }
+    // =============================================================================================
+    // HELPER FUNCTIONS
+    // =============================================================================================
 
-        startFlashButton.setOnClickListener(new View.OnClickListener() {
+
+    private void showToast(String msg, int length) {
+        Toast.makeText(getApplicationContext(), msg, length).show();
+    }
+
+
+    private boolean isPhoneNumberValid(String phoneNumber) {
+        return (phoneNumber.length() == 10 && phoneNumber.matches("[0-9]+")) ||
+                (phoneNumber.length() == 12 && phoneNumber.substring(1).matches("[0-9]+"));
+    }
+
+    // =============================================================================================
+
+
+
+
+
+
+
+
+
+
+    private void setSecondButtonsListeners(){
+
+        // Pentru butonul START FLASH
+        uiHandler.getStartFlashButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String phrase = String.valueOf(phraseInput.getText());
+                String phrase = uiHandler.getPhraseInputText();
 
                 if (phrase.length() > 0) {
+                    uiHandler.hideStartButton();
+                    uiHandler.showStopButton();
+
                     String encoded = morseConverter.encodePhrase(phrase);
-                    String decoded = morseConverter.decodePhrase(encoded);
-                    livePreview.setText(encoded + "\n\n\n" + decoded);
+//                    String decoded = morseConverter.decodePhrase(encoded);
+
+                    uiHandler.setLivePreviewText(encoded);
+
                     flash(encoded);
                 }
 
             }
         });
 
-        stopFlashButton.setOnClickListener(new View.OnClickListener() {
+
+        // Pentru butonul STOP FLASH
+        uiHandler.getStopFlashButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                stopFlashButton.setVisibility(View.GONE);
-                startFlashButton.setVisibility(View.VISIBLE);
+                uiHandler.hideStopButton();
+                uiHandler.showStartButton();
             }
         });
 
-        sendSmsButton.setOnClickListener(new View.OnClickListener() {
+
+        // Pentru butonul SEND SMS
+        uiHandler.getSendSmsButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String phrase = String.valueOf(phraseInput.getText());
-                String encoded = morseConverter.encodePhrase(phrase);
-                SmsHandler.sendSms(phoneNumberSend.getText().toString(), encoded);
+                String phoneNumber = uiHandler.getSendPhoneNumber();
 
-                String currentText = chatView.getText().toString();
-                chatView.setText(currentText + "\n" + "Eu : " + phraseInput.getText().toString());
+                if (!isPhoneNumberValid(phoneNumber)) {
+                    showToast("Please add a valid phone number.", Toast.LENGTH_SHORT);
+                } else {
+                    String phrase = uiHandler.getPhraseInputText();
+                    String encoded = morseConverter.encodePhrase(phrase);
+                    SmsHandler.sendSms(phoneNumber, encoded);
+
+                    uiHandler.setChatViewText(uiHandler.getChatViewText() + "\n" + "Me : " + phrase);
+
+                    // Clear phraseInput
+                    uiHandler.setPhraseInputText("");
+                }
+
+
             }
         });
 
-        initialContext = getApplicationContext();
+
+        // Pentru butonul AGENDA
+        uiHandler.getAgendaButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent contactsIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                startActivityForResult(contactsIntent, CONTACT_SELECTED_CODE);
+            }
+        });
     }
 
-    private void flash(String morsePhrase) {
-        findViewById(R.id.start_flash_button).setVisibility(View.GONE);
-        findViewById(R.id.stop_flash_button).setVisibility(View.VISIBLE);
 
+
+
+
+    private void flash(String morsePhrase) {
         CameraManager cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
-        new Thread(new FlashLighter(this, morsePhrase, cameraManager, startFlashButton, stopFlashButton, 300, 600)).start();
+        new Thread(new FlashLighter(this, uiHandler, morsePhrase, cameraManager,300, 600)).start();
+
+    }
+
+    // =============================================================================================
+    //  PERMISSION FUNCTIONS
+    // =============================================================================================
+
+    private void handlePermissions() {
+        //        final boolean hasFlash = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+//        List<String> neededPermissions = new ArrayList<>(4);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+//            neededPermissions.add(Manifest.permission.CAMERA);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+//            neededPermissions.add(Manifest.permission.SEND_SMS);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_PERMISSION_CODE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+//            neededPermissions.add(Manifest.permission.READ_CONTACTS);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSION_CODE);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
+//            neededPermissions.add(Manifest.permission.RECEIVE_SMS);
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECEIVE_SMS}, RECEIVE_SMS_PERMISSION_CODE);
+        } else {
+            IntentFilter intentFilter = new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
+            registerReceiver(smsReceiver, intentFilter);
+        }
+
+
+//        ActivityCompat.requestPermissions(MainActivity.this, (String[]) neededPermissions.toArray(), 1);
 
     }
 
@@ -184,22 +221,26 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case CAMERA_PERMISSION_CODE:
                 if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(MainActivity.this, "Camera permission denied!", Toast.LENGTH_SHORT).show();
+                    showToast("Camera permission denied!", Toast.LENGTH_SHORT);
                 }
                 break;
             case SEND_SMS_PERMISSION_CODE:
                 if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(MainActivity.this, "Send sms permission denied!", Toast.LENGTH_SHORT).show();
+                    showToast("Send sms permission denied!", Toast.LENGTH_SHORT);
                 }
                 break;
             case RECEIVE_SMS_PERMISSION_CODE:
                 if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(MainActivity.this, "Receive sms permission denied!", Toast.LENGTH_SHORT).show();
+                    showToast("Receive sms permission denied!", Toast.LENGTH_SHORT);
+                } else {
+                    IntentFilter intentFilter = new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
+                    registerReceiver(smsReceiver, intentFilter);
                 }
-//                else {
-//                    IntentFilter intentFilter = new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
-//                    registerReceiver(smsReceiver, intentFilter);
-//                }
+                break;
+            case READ_CONTACTS_PERMISSION_CODE:
+                if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    showToast("Read contacts permission denied!", Toast.LENGTH_SHORT);
+                }
                 break;
             default:
                 break;
@@ -208,14 +249,53 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    // =============================================================================================
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == CONTACT_SELECTED_CODE) {
+
+            if (resultCode == RESULT_OK) {
+                Uri contactData = data.getData();
+                Cursor cursor = getContentResolver().query(contactData, null, null, null, null);
+
+                if (cursor.moveToFirst()) {
+                    // Daca persoana din agenda are macar un numar de telefon adaugat
+                    if (!cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)).equals("0")) {
+                        String currentSendID = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+
+                        // Cautam numarul de telefon de la contactul cu id-ul pe care l-a a ales utilizatorul
+                        Cursor secondCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                                null,
+                                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                                new String[]{currentSendID},
+                                null);
+
+                        if (secondCursor.moveToFirst()) {
+                            String currentSendNumber = secondCursor.getString(secondCursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            uiHandler.setPhoneNumberSendText(currentSendNumber.replace(" ", "").trim());
+                        }
+
+                    } else {
+                        showToast("The contact you selected doesn't have a phone number in Contacts.", Toast.LENGTH_SHORT);
+                    }
+                }
+                cursor.close();
+            }
+
+        }
+    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
         try {
-            if (smsReceiver != null){
+            if (smsReceiver != null) {
                 IntentFilter intentFilter = new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
-//                intentFilter.addAction(android.provider.Telephony.SMS_RECEIVED);
                 registerReceiver(smsReceiver, intentFilter);
             }
         } catch (Exception e) {
@@ -226,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         try {
-            if (smsReceiver != null){
+            if (smsReceiver != null) {
                 unregisterReceiver(smsReceiver);
             }
         } catch (Exception e) {
@@ -234,4 +314,6 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onPause();
     }
+
+
 }

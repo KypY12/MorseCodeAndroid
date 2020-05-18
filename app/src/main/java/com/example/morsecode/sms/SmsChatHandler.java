@@ -1,6 +1,8 @@
-package com.example.morsecode;
+package com.example.morsecode.sms;
 
 import android.widget.TextView;
+
+import com.example.morsecode.morse.MorseConverter;
 
 public class SmsChatHandler {
 
@@ -13,9 +15,9 @@ public class SmsChatHandler {
     }
 
 
-    public void addSms(String phoneNumber, String smsText) {
+    public void addSms(String from, String smsText) {
         String currentText = chatView.getText().toString();
-        chatView.setText(currentText + "\n" + phoneNumber + " : " + morseConverter.decodePhrase(smsText));
+        chatView.setText(currentText + "\n" + from + " : " + morseConverter.decodePhrase(smsText));
 
     }
 

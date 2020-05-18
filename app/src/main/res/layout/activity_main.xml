@@ -7,276 +7,332 @@
     tools:context=".MainActivity">
 
 
-   <LinearLayout
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:orientation="vertical"
-    >
-       <LinearLayout
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:layout_weight="1"
-           android:orientation="horizontal"
-           android:gravity="center"
-           >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-           <Button
-               android:id="@+id/flashModeButton"
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:layout_weight="1"
-               android:text="Flash Mode"
-               />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-           <Button
-               android:id="@+id/smsModeButton"
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:layout_weight="1"
-               android:text="SMS Mode"
-               />
+            <Button
+                android:id="@+id/flashModeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Flash Mode" />
 
-       </LinearLayout>
+            <Button
+                android:id="@+id/smsModeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="SMS Mode" />
 
-       <ScrollView
-           android:id="@+id/globalScrollView"
-           android:layout_width="match_parent"
-           android:layout_height="300dp"
-           android:layout_weight="39"
-           android:fadeScrollbars="false"
-           android:scrollbarStyle="outsideOverlay"
-           android:scrollbarSize="10dp"
-           android:nestedScrollingEnabled="true"
-           android:gravity="center"
-           >
+        </LinearLayout>
 
-           <TableLayout
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               android:gravity="center"
-               app:layout_constraintBottom_toBottomOf="parent"
-               app:layout_constraintEnd_toEndOf="parent"
-               app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintTop_toTopOf="parent">
+        <ScrollView
+            android:id="@+id/globalScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_weight="39"
+            android:fadeScrollbars="false"
+            android:gravity="center"
+            android:nestedScrollingEnabled="true"
+            android:scrollbarSize="15dp"
+            android:scrollbarStyle="outsideOverlay"
+            >
 
-               <TableRow
-                   android:id="@+id/livePreviewTableRow"
-                   android:layout_width="match_parent"
-                   android:layout_height="wrap_content"
-                   android:layout_marginTop="10dp"
-                   android:gravity="center">
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                   <RelativeLayout
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:gravity="center">
+                <TableRow
+                    android:id="@+id/livePreviewTableRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center">
 
-                       <TextView
-                           android:id="@+id/livePreviewTitle"
-                           android:layout_width="300dp"
-                           android:layout_height="25dp"
-                           android:layout_centerHorizontal="true"
-                           android:gravity="center"
-                           android:text="Live preview"
-                           android:textAlignment="center"
-                           android:textIsSelectable="true"
-                           />
+                    <RelativeLayout
+                        android:layout_width="310dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
 
-                       <TextView
-                           android:id="@+id/livePreview"
-                           android:layout_width="310dp"
-                           android:layout_height="80dp"
-                           android:layout_below="@+id/livePreviewTitle"
-                           android:layout_centerHorizontal="true"
+                        <TextView
+                            android:id="@+id/livePreviewTitle"
+                            android:layout_width="300dp"
+                            android:layout_height="25dp"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center"
+                            android:text="Live preview"
+                            android:textAlignment="center"
+                            android:textIsSelectable="true" />
 
-                           android:background="@drawable/border" />
-                   </RelativeLayout>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/livePreviewTitle"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center">
 
-               </TableRow>
+                            <TextView
+                                android:id="@+id/livePreviewLetter"
+                                android:layout_width="155dp"
+                                android:layout_height="160dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/border"
+                                android:gravity="center"
+                                android:text="@string/null_live_letter"
+                                android:textAlignment="center"
+                                android:textIsSelectable="true"
+                                android:textSize="100sp" />
 
-               <TableRow
-                   android:id="@+id/chatViewTableRow"
-                   android:layout_width="match_parent"
-                   android:layout_height="match_parent"
-                   android:layout_marginTop="10dp"
-                   android:gravity="center">
+                            <ScrollView
+                                android:id="@+id/localScrollView3"
+                                android:layout_width="155dp"
+                                android:layout_height="160dp"
+                                android:nestedScrollingEnabled="true"
+                                android:background="@drawable/border"
+                                android:fadeScrollbars="false"
+                                android:scrollbarSize="15dp"
+                                android:scrollbarStyle="outsideOverlay"
 
-                   <RelativeLayout
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:gravity="center">
+                                >
 
-                       <TextView
-                           android:id="@+id/chatViewTitle"
-                           android:layout_width="300dp"
-                           android:layout_height="25dp"
-                           android:layout_centerHorizontal="true"
-                           android:gravity="center"
-                           android:text="SMS History"
-                           android:textAlignment="center"
-                           android:textIsSelectable="true"
-                           />
+                                <TextView
+                                    android:id="@+id/livePreview"
+                                    android:layout_width="140dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:textIsSelectable="true"
+                                    android:textSize="24sp" />
+                            </ScrollView>
 
+                        </LinearLayout>
 
+                    </RelativeLayout>
 
-                       <ScrollView
-                           android:id="@+id/localScrollView1"
-                           android:layout_width="310dp"
-                           android:layout_height="200dp"
-                           android:layout_centerHorizontal="true"
-                           android:background="@drawable/border"
-                           android:layout_below="@+id/chatViewTitle"
-                           android:fadeScrollbars="false"
-                           android:scrollbarStyle="outsideOverlay"
-                           android:scrollbarSize="30dp"
-                           >
+                </TableRow>
 
-                           <TextView
-                               android:id="@+id/chatView"
-                               android:layout_width="match_parent"
-                               android:layout_height="wrap_content"
-                               android:textIsSelectable="true"
-                               />
-                       </ScrollView>
+                <TableRow
+                    android:id="@+id/sendToPhoneNumberTableRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center">
 
-                   </RelativeLayout>
+                    <RelativeLayout
+                        android:id="@+id/relativeLayoutPhoneNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
 
 
-               </TableRow>
+                        <TextView
+                            android:id="@+id/sendToPhoneNumberTitle"
+                            android:layout_width="190dp"
+                            android:layout_height="25dp"
+                            android:gravity="center"
+                            android:layout_centerHorizontal="true"
+                            android:text="Phone number"
+                            android:textAlignment="center"
+                            android:textIsSelectable="true" />
 
-               <TableRow
-                   android:id="@+id/sendToPhoneNumberTableRow"
-                   android:layout_width="match_parent"
-                   android:layout_height="match_parent"
-                   android:layout_marginTop="10dp"
-                   android:gravity="center">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/sendToPhoneNumberTitle"
+                            android:gravity="center"
 
-                   <RelativeLayout
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:gravity="center">
+                            >
 
+                            <EditText
+                                android:id="@+id/sendToPhoneNumber"
+                                android:layout_width="200dp"
+                                android:layout_height="30dp"
+                                android:gravity="center"
+                                android:background="@drawable/border"
+                                android:inputType="phone"
+                                android:digits="0123456789"
+                                android:textAlignment="center" />
 
-                       <TextView
-                           android:id="@+id/sendToPhoneNumberTitle"
-                           android:layout_width="190dp"
-                           android:layout_height="25dp"
-                           android:layout_centerHorizontal="true"
-                           android:gravity="center"
-                           android:text="Phone number"
-                           android:textAlignment="center"
-                           android:textIsSelectable="true"
-                           />
+                            <Button
+                                android:id="@+id/agendaButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAlignment="center"
+                                android:gravity="center"
+                                android:layout_marginLeft="5dp"
+                                android:text="AGENDA" />
+                        </LinearLayout>
 
-                       <EditText
-                           android:id="@+id/sendToPhoneNumber"
-                           android:layout_width="200dp"
-                           android:layout_height="30dp"
-                           android:layout_below="@+id/sendToPhoneNumberTitle"
-                           android:layout_centerHorizontal="true"
-                           android:background="@drawable/border"
-                           android:inputType="phone" />
-                   </RelativeLayout>
-
-
-               </TableRow>
-
-               <TableRow
-                   android:id="@+id/phraseInputTableRow"
-                   android:layout_width="match_parent"
-                   android:layout_height="match_parent"
-                   android:layout_marginTop="10dp"
-                   android:gravity="center">
-
-                   <RelativeLayout
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:gravity="center">
-
-                       <TextView
-                           android:id="@+id/phraseInputTitle"
-                           android:layout_width="300dp"
-                           android:layout_height="25dp"
-                           android:layout_centerHorizontal="true"
-                           android:gravity="center"
-                           android:text="Text input"
-                           android:textAlignment="center"
-                           android:textIsSelectable="true"
-                           />
-
-                       <ScrollView
-                           android:id="@+id/localScrollView2"
-                           android:layout_width="310dp"
-                           android:layout_height="150dp"
-                           android:layout_centerHorizontal="true"
-                           android:background="@drawable/border"
-                           android:layout_below="@+id/phraseInputTitle"
-                           android:fadeScrollbars="false"
-                           android:scrollbarStyle="outsideOverlay"
-                           android:scrollbarSize="30dp"
-                           >
-                           <EditText
-                               android:id="@+id/phraseInput"
-                               android:layout_width="match_parent"
-                               android:layout_height="wrap_content"
-                               android:layout_centerHorizontal="true"
-                               android:inputType="textMultiLine"
-                               />
-                       </ScrollView>
+                    </RelativeLayout>
 
 
+                </TableRow>
 
-                   </RelativeLayout>
+                <TableRow
+                    android:id="@+id/chatViewTableRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center">
 
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
 
-               </TableRow>
-
-
-               <TableRow
-                   android:id="@+id/buttonsTableRow"
-                   android:layout_width="match_parent"
-                   android:layout_height="match_parent"
-                   android:layout_gravity="center"
-                   android:layout_marginTop="10dp"
-                   android:gravity="center">
-
-                   <RelativeLayout
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       android:layout_weight="1"
-                       android:gravity="center">
-
-                       <Button
-                           android:id="@+id/start_flash_button"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:text="Start flash"
-
-                           />
-
-                       <Button
-                           android:id="@+id/stop_flash_button"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:text="Stop flash" />
-
-                       <Button
-                           android:id="@+id/send_sms_button"
-                           android:layout_width="wrap_content"
-                           android:layout_height="wrap_content"
-                           android:text="Send sms"
-                           />
+                        <TextView
+                            android:id="@+id/chatViewTitle"
+                            android:layout_width="300dp"
+                            android:layout_height="25dp"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center"
+                            android:text="SMS History"
+                            android:textAlignment="center"
+                            android:textIsSelectable="true" />
 
 
+                        <ScrollView
+                            android:id="@+id/localScrollView1"
+                            android:layout_width="310dp"
+                            android:layout_height="180dp"
+                            android:layout_below="@+id/chatViewTitle"
+                            android:layout_centerHorizontal="true"
+                            android:background="@drawable/border"
+                            android:nestedScrollingEnabled="true"
+                            android:fadeScrollbars="false"
+                            android:scrollbarSize="15dp"
+                            android:scrollbarStyle="outsideOverlay">
 
-                   </RelativeLayout>
+                            <TextView
+                                android:id="@+id/chatView"
+                                android:layout_width="280dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:textIsSelectable="true" />
+                        </ScrollView>
+
+                    </RelativeLayout>
 
 
-               </TableRow>
+                </TableRow>
 
-           </TableLayout>
+                <TableRow
+                    android:id="@+id/phraseInputTableRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center">
 
-       </ScrollView>
-   </LinearLayout>
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/phraseInputTitle"
+                            android:layout_width="300dp"
+                            android:layout_height="25dp"
+                            android:layout_centerHorizontal="true"
+                            android:gravity="center"
+                            android:text="Text input"
+                            android:textAlignment="center"
+                            android:textIsSelectable="true" />
+
+                        <ScrollView
+                            android:id="@+id/localScrollView2"
+                            android:layout_width="310dp"
+                            android:layout_height="160dp"
+                            android:layout_below="@+id/phraseInputTitle"
+                            android:nestedScrollingEnabled="true"
+                            android:layout_centerHorizontal="true"
+                            android:background="@drawable/border"
+                            android:fadeScrollbars="false"
+                            android:scrollbarSize="15dp"
+                            android:scrollbarStyle="outsideOverlay"
+
+                            >
+
+                            <EditText
+                                android:id="@+id/phraseInput"
+                                android:layout_width="280dp"
+                                android:layout_height="wrap_content"
+                                android:layout_centerHorizontal="true"
+                                android:layout_gravity="center_horizontal"
+                                android:inputType="textMultiLine"
+                                android:minHeight="150dp" />
+                        </ScrollView>
+
+
+                    </RelativeLayout>
+
+
+                </TableRow>
+
+
+                <TableRow
+                    android:id="@+id/buttonsTableRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <Button
+                            android:id="@+id/start_flash_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:text="Start flash"
+
+                            />
+
+                        <Button
+                            android:id="@+id/stop_flash_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:text="Stop flash" />
+
+                        <Button
+                            android:id="@+id/send_sms_button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:text="Send sms"
+
+                            />
+
+
+                    </RelativeLayout>
+
+
+                </TableRow>
+
+            </TableLayout>
+
+        </ScrollView>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

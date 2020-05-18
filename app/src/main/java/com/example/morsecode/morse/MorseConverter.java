@@ -1,12 +1,10 @@
-package com.example.morsecode;
+package com.example.morsecode.morse;
 
-import android.content.Context;
-import android.util.Log;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import android.app.Activity;
 
 public class MorseConverter {
+
+    private Activity activity;
 
     private String symbolsDelimiter = "";
     private String charactersDelimiter = "  ";
@@ -17,15 +15,15 @@ public class MorseConverter {
     private String encodePrefix = "_";
     private String decodePrefix = "__";
 
-    public MorseConverter() {
+    public MorseConverter(Activity activity) {
+        this.activity = activity;
     }
 
     private String encodeCharacter(char character) {
         String characterStr = encodePrefix + String.valueOf(character).toUpperCase();
 
-        Context context = MainActivity.getInitialContext();
-        int chrId = context.getResources().getIdentifier(characterStr, "string", "com.example.morsecode");
-        String chrFormat = context.getResources().getString(chrId);
+        int chrId = activity.getResources().getIdentifier(characterStr, "string", "com.example.morsecode");
+        String chrFormat = activity.getResources().getString(chrId);
 
 
         StringBuilder normalFormat = new StringBuilder();
@@ -64,7 +62,7 @@ public class MorseConverter {
         for (int index = 0; index < words.length; index++) {
             String encodedWord = encodeWord(words[index]);
             encodedPhrase.append(encodedWord);
-            if (index < words.length - 1){
+            if (index < words.length - 1) {
                 encodedPhrase.append(wordsDelimiter);
             }
         }
@@ -73,12 +71,11 @@ public class MorseConverter {
     }
 
 
-
-    public String decodeCharacter(String character){
+    public String decodeCharacter(String character) {
 
         StringBuilder convertFormat = new StringBuilder();
-        for (int index = 0; index < character.length(); index++){
-            if (character.charAt(index) == '-'){
+        for (int index = 0; index < character.length(); index++) {
+            if (character.charAt(index) == '-') {
                 convertFormat.append("L");
             } else {
                 convertFormat.append("P");
@@ -87,18 +84,17 @@ public class MorseConverter {
 
         String characterStr = decodePrefix + convertFormat.toString();
 
-        Context context = MainActivity.getInitialContext();
-        int chrId = context.getResources().getIdentifier(characterStr, "string", "com.example.morsecode");
-        String characterConverted = context.getResources().getString(chrId);
+        int chrId = activity.getResources().getIdentifier(characterStr, "string", "com.example.morsecode");
+        String characterConverted = activity.getResources().getString(chrId);
 
         return characterConverted;
     }
 
-    public String decodeWord(String word){
+    public String decodeWord(String word) {
         String[] characters = word.split(charactersDelimiter);
 
         StringBuilder wordDecoded = new StringBuilder();
-        for (int index = 0; index < characters.length; index++){
+        for (int index = 0; index < characters.length; index++) {
             String character = decodeCharacter(characters[index]);
             wordDecoded.append(character);
         }
@@ -106,14 +102,14 @@ public class MorseConverter {
         return wordDecoded.toString();
     }
 
-    public String decodePhrase(String phrase){
+    public String decodePhrase(String phrase) {
         String[] words = phrase.split(wordsDelimiter);
 
         StringBuilder phraseDecoded = new StringBuilder();
-        for (int index = 0; index < words.length; index++){
+        for (int index = 0; index < words.length; index++) {
             String word = decodeWord(words[index]);
             phraseDecoded.append(word);
-            if (index < words.length - 1){
+            if (index < words.length - 1) {
                 phraseDecoded.append(" ");
             }
         }
