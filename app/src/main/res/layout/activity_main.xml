@@ -10,7 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:theme="@style/GlobalBackground">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,18 +25,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Flash Mode" />
+                android:text="@string/flash_mode_button_text"
+                android:theme="@style/CustomButton"
+                tools:ignore="ButtonStyle,NestedWeights" />
 
             <Button
                 android:id="@+id/smsModeButton"
+                android:theme="@style/CustomButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="SMS Mode" />
+                android:text="@string/sms_mode_button_text"
+                tools:ignore="ButtonStyle" />
 
         </LinearLayout>
 
         <ScrollView
+            android:scrollbarThumbVertical="@drawable/scrollbar"
             android:id="@+id/globalScrollView"
             android:layout_width="match_parent"
             android:layout_height="300dp"
@@ -49,7 +55,7 @@
 
             <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -66,19 +72,22 @@
                     <RelativeLayout
                         android:layout_width="310dp"
                         android:layout_height="wrap_content"
-                        android:gravity="center">
+                        android:gravity="center"
+                        tools:ignore="UselessParent">
 
                         <TextView
                             android:id="@+id/livePreviewTitle"
+                            android:theme="@style/TitlesStyle"
                             android:layout_width="300dp"
                             android:layout_height="25dp"
                             android:layout_centerHorizontal="true"
                             android:gravity="center"
-                            android:text="Live preview"
+                            android:text="@string/live_preview_title"
                             android:textAlignment="center"
                             android:textIsSelectable="true" />
 
                         <LinearLayout
+                            android:id="@+id/letterSymbolsPreviewLayout"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/livePreviewTitle"
@@ -87,38 +96,58 @@
 
                             <TextView
                                 android:id="@+id/livePreviewLetter"
+                                android:theme="@style/CutomPanel"
                                 android:layout_width="155dp"
-                                android:layout_height="160dp"
+                                android:layout_height="100dp"
                                 android:layout_gravity="center"
                                 android:background="@drawable/border"
                                 android:gravity="center"
                                 android:text="@string/null_live_letter"
                                 android:textAlignment="center"
                                 android:textIsSelectable="true"
-                                android:textSize="100sp" />
+                                android:textSize="68sp" />
 
-                            <ScrollView
-                                android:id="@+id/localScrollView3"
+                            <TextView
+                                android:id="@+id/livePreviewSymbols"
+                                android:theme="@style/CutomPanel"
                                 android:layout_width="155dp"
-                                android:layout_height="160dp"
-                                android:nestedScrollingEnabled="true"
+                                android:layout_height="100dp"
+                                android:layout_gravity="center"
                                 android:background="@drawable/border"
-                                android:fadeScrollbars="false"
-                                android:scrollbarSize="15dp"
-                                android:scrollbarStyle="outsideOverlay"
+                                android:gravity="center"
+                                android:text="@string/null_live_symbol"
+                                android:textAlignment="center"
+                                android:textIsSelectable="true"
+                                android:textSize="68sp" />
 
-                                >
 
-                                <TextView
-                                    android:id="@+id/livePreview"
-                                    android:layout_width="140dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center_horizontal"
-                                    android:textIsSelectable="true"
-                                    android:textSize="24sp" />
-                            </ScrollView>
 
                         </LinearLayout>
+
+                        <ScrollView
+                            android:id="@+id/localScrollView3"
+                            android:scrollbarThumbVertical="@drawable/scrollbar"
+                            android:theme="@style/CutomPanel"
+                            android:layout_width="310dp"
+                            android:layout_height="163dp"
+                            android:nestedScrollingEnabled="true"
+                            android:background="@drawable/border"
+                            android:fadeScrollbars="false"
+                            android:scrollbarSize="15dp"
+                            android:scrollbarStyle="outsideOverlay"
+                            tools:ignore="NestedScrolling"
+                            android:layout_below="@+id/letterSymbolsPreviewLayout"
+                            >
+
+                            <TextView
+                                android:id="@+id/livePreview"
+                                android:layout_marginTop="2dp"
+                                android:layout_width="280dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:textIsSelectable="true"
+                                android:textSize="24sp" />
+                        </ScrollView>
 
                     </RelativeLayout>
 
@@ -135,16 +164,18 @@
                         android:id="@+id/relativeLayoutPhoneNumber"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center">
+                        android:gravity="center"
+                        tools:ignore="UselessParent">
 
 
                         <TextView
                             android:id="@+id/sendToPhoneNumberTitle"
+                            android:theme="@style/TitlesStyle"
                             android:layout_width="190dp"
                             android:layout_height="25dp"
                             android:gravity="center"
                             android:layout_centerHorizontal="true"
-                            android:text="Phone number"
+                            android:text="@string/phone_number_title"
                             android:textAlignment="center"
                             android:textIsSelectable="true" />
 
@@ -158,22 +189,25 @@
 
                             <EditText
                                 android:id="@+id/sendToPhoneNumber"
+                                android:theme="@style/CutomPanel"
                                 android:layout_width="200dp"
                                 android:layout_height="30dp"
                                 android:gravity="center"
                                 android:background="@drawable/border"
                                 android:inputType="phone"
                                 android:digits="0123456789"
-                                android:textAlignment="center" />
+                                android:textAlignment="center"
+                                tools:ignore="Autofill,LabelFor" />
 
                             <Button
                                 android:id="@+id/agendaButton"
+                                android:theme="@style/CustomButton"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textAlignment="center"
                                 android:gravity="center"
-                                android:layout_marginLeft="5dp"
-                                android:text="AGENDA" />
+                                android:layout_marginStart="5dp"
+                                android:text="@string/agenda_button_text" />
                         </LinearLayout>
 
                     </RelativeLayout>
@@ -191,33 +225,43 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center">
+                        android:gravity="center"
+                        tools:ignore="UselessParent">
 
                         <TextView
                             android:id="@+id/chatViewTitle"
+                            android:theme="@style/TitlesStyle"
                             android:layout_width="300dp"
                             android:layout_height="25dp"
                             android:layout_centerHorizontal="true"
                             android:gravity="center"
-                            android:text="SMS History"
+                            android:text="@string/chat_view_title"
                             android:textAlignment="center"
                             android:textIsSelectable="true" />
 
 
                         <ScrollView
                             android:id="@+id/localScrollView1"
+                            android:scrollbarThumbVertical="@drawable/scrollbar"
+                            android:theme="@style/CutomPanel"
                             android:layout_width="310dp"
                             android:layout_height="180dp"
                             android:layout_below="@+id/chatViewTitle"
                             android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
                             android:background="@drawable/border"
                             android:nestedScrollingEnabled="true"
                             android:fadeScrollbars="false"
                             android:scrollbarSize="15dp"
-                            android:scrollbarStyle="outsideOverlay">
+                            android:scrollbarStyle="outsideOverlay"
+                            tools:ignore="NestedScrolling"
+
+                            >
 
                             <TextView
                                 android:id="@+id/chatView"
+                                android:layout_marginTop="2dp"
+                                android:paddingBottom="20dp"
                                 android:layout_width="280dp"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center_horizontal"
@@ -239,20 +283,24 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center">
+                        android:gravity="center"
+                        tools:ignore="UselessParent">
 
                         <TextView
                             android:id="@+id/phraseInputTitle"
+                            android:theme="@style/TitlesStyle"
                             android:layout_width="300dp"
                             android:layout_height="25dp"
                             android:layout_centerHorizontal="true"
                             android:gravity="center"
-                            android:text="Text input"
+                            android:text="@string/text_input_title"
                             android:textAlignment="center"
                             android:textIsSelectable="true" />
 
                         <ScrollView
+                            android:scrollbarThumbVertical="@drawable/scrollbar"
                             android:id="@+id/localScrollView2"
+                            android:theme="@style/CutomPanel"
                             android:layout_width="310dp"
                             android:layout_height="160dp"
                             android:layout_below="@+id/phraseInputTitle"
@@ -263,16 +311,17 @@
                             android:scrollbarSize="15dp"
                             android:scrollbarStyle="outsideOverlay"
 
-                            >
+                            tools:ignore="NestedScrolling">
 
                             <EditText
                                 android:id="@+id/phraseInput"
+                                android:layout_marginTop="2dp"
                                 android:layout_width="280dp"
                                 android:layout_height="wrap_content"
-                                android:layout_centerHorizontal="true"
                                 android:layout_gravity="center_horizontal"
                                 android:inputType="textMultiLine"
-                                android:minHeight="150dp" />
+                                android:minHeight="150dp"
+                                tools:ignore="Autofill,LabelFor" />
                         </ScrollView>
 
 
@@ -294,7 +343,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center">
+                        android:gravity="center"
+                        tools:ignore="UselessParent">
 
                         <Button
                             android:id="@+id/start_flash_button"
@@ -302,7 +352,9 @@
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:layout_centerVertical="true"
-                            android:text="Start flash"
+                            android:text="@string/start_flash_button_text"
+                            android:theme="@style/CustomButton"
+
 
                             />
 
@@ -312,7 +364,10 @@
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:layout_centerVertical="true"
-                            android:text="Stop flash" />
+                            android:text="@string/stop_flash_button_text"
+                            android:theme="@style/CustomButton"
+
+                            />
 
                         <Button
                             android:id="@+id/send_sms_button"
@@ -320,7 +375,8 @@
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
                             android:layout_centerVertical="true"
-                            android:text="Send sms"
+                            android:text="@string/send_sms_button_text"
+                            android:theme="@style/CustomButton"
 
                             />
 

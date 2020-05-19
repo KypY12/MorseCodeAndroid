@@ -16,9 +16,11 @@ import android.database.Cursor;
 import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.morsecode.flash.FlashLighter;
@@ -35,11 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private final int READ_CONTACTS_PERMISSION_CODE = 3;
     private final int CONTACT_SELECTED_CODE = 4;
 
-    private static Context initialContext;
-
-    public static Context getInitialContext() {
-        return initialContext;
-    }
 
     private MorseConverter morseConverter;
     private BroadcastReceiver smsReceiver;
@@ -62,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         morseConverter = new MorseConverter(this);
-        smsReceiver = new SmsHandler(uiHandler.getChatView(), morseConverter);
+        smsReceiver = new SmsHandler(this, uiHandler.getChatView(), morseConverter);
 
         // Gestionez permisiunile
         handlePermissions();
@@ -75,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
         // Setez listeners pentru celelalte butoane
         setSecondButtonsListeners();
 
-        initialContext = getApplicationContext();
     }
 
 
@@ -95,13 +91,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // =============================================================================================
-
-
-
-
-
-
-
 
 
 
@@ -149,13 +138,25 @@ public class MainActivity extends AppCompatActivity {
                     showToast("Please add a valid phone number.", Toast.LENGTH_SHORT);
                 } else {
                     String phrase = uiHandler.getPhraseInputText();
-                    String encoded = morseConverter.encodePhrase(phrase);
-                    SmsHandler.sendSms(phoneNumber, encoded);
 
-                    uiHandler.setChatViewText(uiHandler.getChatViewText() + "\n" + "Me : " + phrase);
+                    if (phrase.length() > 0){
 
-                    // Clear phraseInput
-                    uiHandler.setPhraseInputText("");
+                        String encoded = morseConverter.encodePhrase(phrase);
+                        SmsHandler.sendSms(phoneNumber, encoded);
+
+                        uiHandler.setChatViewText(uiHandler.getChatViewText() + "\n" + "Me : " + phrase);
+
+                        final ScrollView scrollView1 = findViewById(R.id.localScrollView1);
+                        scrollView1.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                scrollView1.fullScroll(View.FOCUS_DOWN);
+                            }
+                        });
+
+                        // Clear phraseInput
+                        uiHandler.setPhraseInputText("");
+                    }
                 }
 
 
@@ -172,8 +173,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
 
 
 

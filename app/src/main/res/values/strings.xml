@@ -1,6 +1,20 @@
 <resources>
     <string name="app_name">MorseCode</string>
-    <string name="null_live_letter">=</string>
+    <string name="null_live_letter">^</string>
+    <string name="null_live_symbol">^</string>
+
+
+    <string name="live_preview_title">Live preview</string>
+    <string name="chat_view_title">SMS History</string>
+    <string name="phone_number_title">Phone number</string>
+    <string name="text_input_title">Text input</string>
+
+    <string name="flash_mode_button_text">Flash Mode</string>
+    <string name="sms_mode_button_text">SMS Mode</string>
+    <string name="start_flash_button_text">Start flash</string>
+    <string name="stop_flash_button_text">Stop flash</string>
+    <string name="send_sms_button_text">Send SMS</string>
+    <string name="agenda_button_text">AGENDA</string>
 
 
 </resources>
