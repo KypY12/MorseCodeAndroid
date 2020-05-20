@@ -29,13 +29,16 @@ import com.example.morsecode.handlers.UiHandler;
 import com.example.morsecode.morse.MorseConverter;
 import com.example.morsecode.sms.SmsHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
-    private final int CAMERA_PERMISSION_CODE = 0;
-    private final int SEND_SMS_PERMISSION_CODE = 1;
-    private final int RECEIVE_SMS_PERMISSION_CODE = 2;
-    private final int READ_CONTACTS_PERMISSION_CODE = 3;
-    private final int CONTACT_SELECTED_CODE = 4;
+    public static final int CAMERA_PERMISSION_CODE = 0;
+    public static final int SEND_SMS_PERMISSION_CODE = 1;
+    public static final int RECEIVE_SMS_PERMISSION_CODE = 2;
+    public static final int READ_CONTACTS_PERMISSION_CODE = 3;
+    public static final int CONTACT_SELECTED_CODE = 4;
 
 
     private MorseConverter morseConverter;
@@ -93,25 +96,28 @@ public class MainActivity extends AppCompatActivity {
     // =============================================================================================
 
 
-
-    private void setSecondButtonsListeners(){
+    private void setSecondButtonsListeners() {
 
         // Pentru butonul START FLASH
         uiHandler.getStartFlashButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String phrase = uiHandler.getPhraseInputText();
+                if (ContextCompat.checkSelfPermission(v.getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
 
-                if (phrase.length() > 0) {
-                    uiHandler.hideStartButton();
-                    uiHandler.showStopButton();
+                } else {
+                    String phrase = uiHandler.getPhraseInputText();
 
-                    String encoded = morseConverter.encodePhrase(phrase);
-//                    String decoded = morseConverter.decodePhrase(encoded);
+                    if (phrase.length() > 0) {
+                        uiHandler.hideStartButton();
+                        uiHandler.showStopButton();
 
-                    uiHandler.setLivePreviewText(encoded);
+                        String encoded = morseConverter.encodePhrase(phrase);
 
-                    flash(encoded);
+                        uiHandler.setLivePreviewText(encoded);
+
+                        flash(encoded);
+                    }
                 }
 
             }
@@ -132,33 +138,37 @@ public class MainActivity extends AppCompatActivity {
         uiHandler.getSendSmsButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String phoneNumber = uiHandler.getSendPhoneNumber();
-
-                if (!isPhoneNumberValid(phoneNumber)) {
-                    showToast("Please add a valid phone number.", Toast.LENGTH_SHORT);
+                if (ContextCompat.checkSelfPermission(v.getContext(), Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_PERMISSION_CODE);
                 } else {
-                    String phrase = uiHandler.getPhraseInputText();
+                    String phoneNumber = uiHandler.getSendPhoneNumber();
 
-                    if (phrase.length() > 0){
+                    if (!isPhoneNumberValid(phoneNumber)) {
+                        showToast("Please add a valid phone number.", Toast.LENGTH_SHORT);
+                    } else {
+                        String phrase = uiHandler.getPhraseInputText();
 
-                        String encoded = morseConverter.encodePhrase(phrase);
-                        SmsHandler.sendSms(phoneNumber, encoded);
+                        if (phrase.length() > 0) {
 
-                        uiHandler.setChatViewText(uiHandler.getChatViewText() + "\n" + "Me : " + phrase);
+                            String encoded = morseConverter.encodePhrase(phrase);
+                            SmsHandler.sendSms(phoneNumber, encoded);
 
-                        final ScrollView scrollView1 = findViewById(R.id.localScrollView1);
-                        scrollView1.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                scrollView1.fullScroll(View.FOCUS_DOWN);
-                            }
-                        });
+                            uiHandler.setChatViewText(uiHandler.getChatViewText() + "\n" + "Me : " + phrase);
 
-                        // Clear phraseInput
-                        uiHandler.setPhraseInputText("");
+                            final ScrollView scrollView1 = findViewById(R.id.localScrollView1);
+                            scrollView1.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    scrollView1.fullScroll(View.FOCUS_DOWN);
+                                }
+                            });
+
+                            // Clear phraseInput
+                            uiHandler.setPhraseInputText("");
+                        }
                     }
-                }
 
+                }
 
             }
         });
@@ -168,17 +178,20 @@ public class MainActivity extends AppCompatActivity {
         uiHandler.getAgendaButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent contactsIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                startActivityForResult(contactsIntent, CONTACT_SELECTED_CODE);
+                if (ContextCompat.checkSelfPermission(v.getContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSION_CODE);
+                } else {
+                    Intent contactsIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                    startActivityForResult(contactsIntent, CONTACT_SELECTED_CODE);
+                }
             }
         });
     }
 
 
-
     private void flash(String morsePhrase) {
         CameraManager cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
-        new Thread(new FlashLighter(this, uiHandler, morsePhrase, cameraManager,300, 600)).start();
+        new Thread(new FlashLighter(this, uiHandler, morsePhrase, cameraManager, 300, 600)).start();
 
     }
 
@@ -187,31 +200,12 @@ public class MainActivity extends AppCompatActivity {
     // =============================================================================================
 
     private void handlePermissions() {
-        //        final boolean hasFlash = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
-//        List<String> neededPermissions = new ArrayList<>(4);
+        final boolean hasFlash = getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-//            neededPermissions.add(Manifest.permission.CAMERA);
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);
+        if (hasFlash) {
+            String[] neededPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.SEND_SMS, Manifest.permission.READ_CONTACTS, Manifest.permission.RECEIVE_SMS};
+            ActivityCompat.requestPermissions(MainActivity.this, neededPermissions, 1);
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) != PackageManager.PERMISSION_GRANTED) {
-//            neededPermissions.add(Manifest.permission.SEND_SMS);
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.SEND_SMS}, SEND_SMS_PERMISSION_CODE);
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-//            neededPermissions.add(Manifest.permission.READ_CONTACTS);
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSION_CODE);
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
-//            neededPermissions.add(Manifest.permission.RECEIVE_SMS);
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.RECEIVE_SMS}, RECEIVE_SMS_PERMISSION_CODE);
-        } else {
-            IntentFilter intentFilter = new IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION);
-            registerReceiver(smsReceiver, intentFilter);
-        }
-
-
-//        ActivityCompat.requestPermissions(MainActivity.this, (String[]) neededPermissions.toArray(), 1);
 
     }
 
@@ -221,11 +215,15 @@ public class MainActivity extends AppCompatActivity {
             case CAMERA_PERMISSION_CODE:
                 if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     showToast("Camera permission denied!", Toast.LENGTH_SHORT);
+                } else {
+                    showToast("Press START FLASH again", Toast.LENGTH_SHORT);
                 }
                 break;
             case SEND_SMS_PERMISSION_CODE:
                 if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     showToast("Send sms permission denied!", Toast.LENGTH_SHORT);
+                } else {
+                    showToast("Press SEND SMS again", Toast.LENGTH_SHORT);
                 }
                 break;
             case RECEIVE_SMS_PERMISSION_CODE:
@@ -239,6 +237,8 @@ public class MainActivity extends AppCompatActivity {
             case READ_CONTACTS_PERMISSION_CODE:
                 if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     showToast("Read contacts permission denied!", Toast.LENGTH_SHORT);
+                } else {
+                    showToast("Press AGENDA again", Toast.LENGTH_SHORT);
                 }
                 break;
             default:

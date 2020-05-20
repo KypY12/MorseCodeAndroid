@@ -1,9 +1,11 @@
 package com.example.morsecode.sms;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -15,6 +17,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import com.example.morsecode.MainActivity;
 import com.example.morsecode.R;
 import com.example.morsecode.morse.MorseConverter;
 
@@ -27,13 +33,16 @@ public class SmsHandler extends BroadcastReceiver {
     private static String smsSuffix = "\n";
 
     private SmsChatHandler smsChatHandler;
+    private Activity activity;
 
     public SmsHandler(Activity activity, TextView chatView, MorseConverter morseConverter) {
+        this.activity = activity;
         this.smsChatHandler = new SmsChatHandler(activity, chatView, morseConverter);
     }
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
         if (intent.getExtras() != null) {
 
             StringBuilder smsTextBuilder = new StringBuilder();
